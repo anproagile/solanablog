@@ -10,6 +10,11 @@ pub mod blog_tutorial {
         blog.acc.authority = *ctx.accounts.authority.key;
         Ok(())
     }
+
+    pub fn make_post(ctx: Context<MakePost>) -> ProgramResult {
+        //post
+        Ok(())
+    }
 }
 
 #[derive(Accounts)] //structs
@@ -19,6 +24,10 @@ pub struct Initialize<'info> {
    // #[account(mut)]
     pub authority: Signer<'info>,
     pub system_program:Program<'info, System>,
+}
+
+pub struct MakePost<'info> {
+
 }
 
 #[account] //storage
