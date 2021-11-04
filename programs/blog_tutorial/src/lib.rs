@@ -1,22 +1,24 @@
 use anchor_lang::prelude::*;
 
-declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"); //program ID(public key)
+declare_id!("6E1ywyokB5Y2WD7xXx6NMcDaUSnn5fi8jux4VrXysqdD"); //program ID(public key)
 
 #[program] //functions
 pub mod blog_tutorial {
     use super::*;
     pub fn initialize(ctx: Context<Initialize>) -> ProgramResult {//Initialize 
-      // ctx.accounts.
+      let blog_acc = &mut ctx.account.blog_account;
+        blog.acc.authority = *ctx.accounts.authority.key;
         Ok(())
     }
 }
 
 #[derive(Accounts)] //structs
-pub struct Initialize {
-    #[account(init,payer = authority)]
+pub struct Initialize<'info> {
+    #[account(init,payer = authority, space = 8 + 32 + 566 )] //initializer, payer for intializing, space for account discriminator, 32 for pubkey, 566 max post bytes
     pub blog_account: Account<'info, BlogAccount>,
-    #[account(mut)]
+   // #[account(mut)]
     pub authority: Signer<'info>,
+    pub system_program:Program<'info, System>,
 }
 
 #[account] //storage
