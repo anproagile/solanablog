@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use std::str::from_utf8;
 
 declare_id!("6E1ywyokB5Y2WD7xXx6NMcDaUSnn5fi8jux4VrXysqdD"); //program ID(public key)
 
@@ -11,8 +12,13 @@ pub mod blog_tutorial {
         Ok(())
     }
 
-    pub fn make_post(ctx: Context<MakePost>) -> ProgramResult {
+    pub fn make_post(ctx: Context<MakePost>, new_post: Vec<u8>) -> ProgramResult {
         //post
+        let memo = from_utf8(&new_post).map_err(|err| {
+            msg!("Invalid UTF-8. from byte {}",err.valid_up_to());
+            ProgramError::InvalidInstructionData
+        })?;
+        msg!("Memo (len {}): {:?}",memo.len(), memo);
         Ok(())
     }
 }
@@ -26,8 +32,15 @@ pub struct Initialize<'info> {
     pub system_program:Program<'info, System>,
 }
 
+#[derive(Accounts)]
 pub struct MakePost<'info> {
+    #[account(mut,has_one = authority,)] //this must be checked so that it is present
 
+    //for this struct to be made, the following must be input
+
+
+    pub blog_account: Account<'info, BlogAccount>,
+    pub authority: Signer<'info>,
 }
 
 #[account] //storage
