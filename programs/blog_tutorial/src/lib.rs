@@ -14,11 +14,14 @@ pub mod blog_tutorial {
 
     pub fn make_post(ctx: Context<MakePost>, new_post: Vec<u8>) -> ProgramResult {
         //post
-        let memo = from_utf8(&new_post).map_err(|err| {
+        let post = from_utf8(&new_post).map_err(|err| {
             msg!("Invalid UTF-8. from byte {}",err.valid_up_to());
             ProgramError::InvalidInstructionData
         })?;
-        msg!("Memo (len {}): {:?}",memo.len(), memo);
+        msg!(post);
+
+        let blog_acc = &mut ctx.account.blog_account;
+        blog_acc.latest_post = new_post;
         Ok(())
     }
 }
@@ -34,7 +37,7 @@ pub struct Initialize<'info> {
 
 #[derive(Accounts)]
 pub struct MakePost<'info> {
-    #[account(mut,has_one = authority,)] //this must be checked so that it is present
+    #[account(mut,has_one = authority,)] //level of access and security checks
 
     //for this struct to be made, the following must be input
 
@@ -46,6 +49,6 @@ pub struct MakePost<'info> {
 #[account] //storage
 
 pub struct BlogAccount {
-    pub latest_post: u64,
+    pub latest_post: Vec<u8>,
     pub authority: Pubkey,
 }
